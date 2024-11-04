@@ -1,2 +1,0 @@
-print("djsdf")
-print("hfgjhgh")
