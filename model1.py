@@ -4,7 +4,7 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.metrics import accuracy_score, classification_report
 import matplotlib.pyplot as plt
 
-
+# Load dataset
 data = pd.read_csv('processed_data.csv')
 
 # Handle missing values
@@ -34,5 +34,15 @@ print("Classification Report:\n", classification_report(y_test, y_pred))
 
 # Visualize the Decision Tree
 plt.figure(figsize=(20, 10))
-plot_tree(clf, feature_names=X.columns, class_names=["No Stroke", "Stroke"], filled=True)
+
+# Use the plot_tree function with class_names to display class labels
+plot_tree(
+    clf,
+    feature_names=X.columns,
+    class_names=["No Stroke", "Stroke"],
+    filled=True,
+    proportion=False,  # Do not show proportions
+    impurity=True,     # Display Gini impurity
+)
+
 plt.show()
