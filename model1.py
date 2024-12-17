@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.metrics import accuracy_score, classification_report
+from sklearn.utils import resample
 import matplotlib.pyplot as plt
 
 # Load dataset
@@ -18,8 +19,30 @@ data = pd.get_dummies(data, columns=categorical_cols, drop_first=True)
 X = data.drop(['stroke'], axis=1)  # Drop the target column
 y = data['stroke']  # Target column
 
+# Combine X and y for balancing
+data_combined = pd.concat([X, y], axis=1)
+
+# Separate majority and minority classes
+majority = data_combined[data_combined['stroke'] == 0]
+minority = data_combined[data_combined['stroke'] == 1]
+
+# Oversample the minority class
+minority_oversampled = resample(
+    minority,
+    replace=True,                # Sample with replacement
+    n_samples=len(majority),     # Match number of majority samples
+    random_state=42              # For reproducibility
+)
+
+# Combine the oversampled minority class with the majority class
+balanced_data = pd.concat([majority, minority_oversampled])
+
+# Separate features and target again
+X_balanced = balanced_data.drop(['stroke'], axis=1)
+y_balanced = balanced_data['stroke']
+
 # Split data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X_balanced, y_balanced, test_size=0.2, random_state=42)
 
 # Initialize and train the Decision Tree Classifier
 clf = DecisionTreeClassifier(max_depth=5, random_state=42)  # You can adjust max_depth
